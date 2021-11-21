@@ -15,6 +15,10 @@ class Document
     public:
         Document();
         Document(std::string filePath);
+        int getColumnCount();
+        int getCursorColumnIndex();
+        int getLineCount();
+        int getCursorLineIndex();
         void addNewline();
         void addTab();
         void addText(std::string text);

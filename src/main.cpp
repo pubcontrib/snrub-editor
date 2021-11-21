@@ -55,7 +55,7 @@ int main(int argc, char **argv)
         "[]{}/\\|?.,"
         ":;\"'`-+=<>"
         "~_         ");
-    SDL_Texture *placeholder16 = loadBmpTexture("res/16.bmp", renderer);
+    SDL_Texture *bar16 = loadBmpTexture("res/bar16.bmp", renderer);
     SDL_Texture *placeholder24 = loadBmpTexture("res/24.bmp", renderer);
     SDL_Texture *placeholder32 = loadBmpTexture("res/32.bmp", renderer);
     Document document = argc > 1 ? Document(argv[1]) : Document();
@@ -70,20 +70,35 @@ int main(int argc, char **argv)
         {
             SDL_RenderClear(renderer);
 
+            // Draw tool bar
             for (int width = 0; width < 640; width += 24)
             {
                 drawTexture(placeholder24, width, 0, 24, 24, renderer);
             }
 
-            for (int width = 0; width < 640; width += 16)
-            {
-                drawTexture(placeholder16, width, 312, 16, 16, renderer);
-            }
-
+            // Draw text editor
             SDL_Point to = {0, 24};
             SDL_Point bounds = {80, 24};
             document.draw(to, bounds, &font, renderer);
 
+            // Draw status bar
+            for (int width = 0; width < 640; width += 16)
+            {
+                drawTexture(bar16, width, 312, 16, 16, renderer);
+            }
+
+            to = {4, 316};
+            std::string line = "LINE:" + std::to_string(document.getCursorLineIndex()) + "/" + std::to_string(document.getLineCount());
+            SDL_Color color = {125, 125, 125, 255};
+            font.setColor(&color);
+            font.draw(to, line, renderer);
+
+            to = {320, 316};
+            std::string column = "COLUMN:" + std::to_string(document.getCursorColumnIndex()) + "/" + std::to_string(document.getColumnCount());
+            font.setColor(&color);
+            font.draw(to, column, renderer);
+
+            // Swap render buffer
             SDL_RenderPresent(renderer);
 
             redraw = false;

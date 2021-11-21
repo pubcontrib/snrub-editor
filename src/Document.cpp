@@ -49,6 +49,26 @@ Document::Document(std::string filePath)
     memory = cursor.x;
 }
 
+int Document::getColumnCount()
+{
+    return lines[cursor.y].length();
+}
+
+int Document::getCursorColumnIndex()
+{
+    return cursor.x + 1;
+}
+
+int Document::getLineCount()
+{
+    return lines.size();
+}
+
+int Document::getCursorLineIndex()
+{
+    return cursor.y + 1;
+}
+
 void Document::addNewline()
 {
     std::string line = lines[cursor.y];
