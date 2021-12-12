@@ -61,6 +61,7 @@ int main(int argc, char **argv)
     Document document = argc > 1 ? Document(argv[1]) : Document();
     bool quit = false;
     bool redraw = true;
+    Uint32 lastUpdate = SDL_GetTicks();
 
     while (!quit)
     {
@@ -162,6 +163,18 @@ int main(int argc, char **argv)
                     break;
             }
         }
+
+        // Sleep until the next expected update frame
+        Uint32 now = SDL_GetTicks();
+        Uint32 frame = now - lastUpdate;
+        Uint32 target = 17; // 1000 / 60
+
+        if (frame < target)
+        {
+            SDL_Delay(target - frame);
+        }
+
+        lastUpdate = now;
     }
 
     SDL_DestroyRenderer(renderer);
