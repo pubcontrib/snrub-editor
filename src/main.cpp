@@ -62,6 +62,10 @@ int main(int argc, char **argv)
     bool quit = false;
     bool redraw = true;
     Uint32 lastUpdate = SDL_GetTicks();
+    Uint32 lastMeasure = SDL_GetTicks();
+    int lastFps = 0;
+    int currentFps = 0;
+    int targetFps = 60;
 
     while (!quit)
     {
@@ -88,16 +92,27 @@ int main(int argc, char **argv)
                 drawTexture(bar16, width, 312, 16, 16, renderer);
             }
 
-            to = {4, 316};
-            std::string line = "LINE:" + std::to_string(document.getCursorLineIndex()) + "/" + std::to_string(document.getLineCount());
+            to = {0, 316};
+            std::string line = " L "
+                + std::to_string(document.getCursorLineIndex())
+                + "/"
+                + std::to_string(document.getLineCount())
+                + " | "
+                + "C "
+                + std::to_string(document.getCursorColumnIndex())
+                + "/"
+                + std::to_string(document.getColumnCount())
+                + " |";
             SDL_Color color = {125, 125, 125, 255};
             font.setColor(&color);
             font.draw(to, line, renderer);
 
-            to = {320, 316};
-            std::string column = "COLUMN:" + std::to_string(document.getCursorColumnIndex()) + "/" + std::to_string(document.getColumnCount());
+            to = {568, 316};
+            line = "| "
+                + std::to_string(lastFps)
+                + " FPS";
             font.setColor(&color);
-            font.draw(to, column, renderer);
+            font.draw(to, line, renderer);
 
             // Swap render buffer
             SDL_RenderPresent(renderer);
@@ -164,17 +179,27 @@ int main(int argc, char **argv)
             }
         }
 
-        // Sleep until the next expected update frame
-        Uint32 now = SDL_GetTicks();
-        Uint32 frame = now - lastUpdate;
-        Uint32 target = 17; // 1000 / 60
-
-        if (frame < target)
+        // Measure frame rate
+        if (SDL_GetTicks() - lastMeasure >= 1000)
         {
-            SDL_Delay(target - frame);
+            redraw = lastFps != currentFps;
+            lastMeasure = SDL_GetTicks();
+            lastFps = currentFps;
+            currentFps = 0;
         }
 
-        lastUpdate = now;
+        currentFps += 1;
+
+        // Sleep until the next expected update frame
+        Uint32 duration = SDL_GetTicks() - lastUpdate;
+        int target = 1000 / targetFps;
+
+        if (duration <= target)
+        {
+            SDL_Delay(target - duration);
+        }
+
+        lastUpdate = SDL_GetTicks();
     }
 
     SDL_DestroyRenderer(renderer);
