@@ -194,7 +194,7 @@ int main(int argc, char **argv)
         Uint32 duration = SDL_GetTicks() - lastUpdate;
         int target = 1000 / targetFps;
 
-        if (duration <= target)
+        if (duration < target)
         {
             SDL_Delay(target - duration);
         }
