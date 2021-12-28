@@ -6,6 +6,31 @@
 #include <vector>
 #include <string>
 
+#define SYMBOL_ESCAPE '\\'
+#define SYMBOL_COMMENT '`'
+#define SYMBOL_NUMBER '#'
+#define SYMBOL_STRING '"'
+#define SYMBOL_LIST_START '['
+#define SYMBOL_LIST_END ']'
+#define SYMBOL_MAP_START '{'
+#define SYMBOL_MAP_END '}'
+#define SYMBOL_CALL_START '('
+#define SYMBOL_CALL_END ')'
+#define SYMBOL_NULL '?'
+
+typedef struct
+{
+    SDL_Color comments;
+    SDL_Color numbers;
+    SDL_Color strings;
+    SDL_Color lists;
+    SDL_Color maps;
+    SDL_Color calls;
+    SDL_Color nulls;
+    SDL_Color cursor;
+    SDL_Color undefined;
+} color_theme_t;
+
 class Document
 {
     std::vector<std::string> lines;
@@ -28,7 +53,7 @@ class Document
         void moveCursorDown();
         void moveCursorLeft();
         void moveCursorRight();
-        void draw(SDL_Point to, SDL_Point bounds, FontSheet *font, SDL_Renderer *renderer);
+        void draw(SDL_Point to, SDL_Point bounds, color_theme_t *theme, FontSheet *font, SDL_Renderer *renderer);
 };
 
 #endif

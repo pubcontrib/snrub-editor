@@ -39,7 +39,7 @@ int main(int argc, char **argv)
         crash("Failed to create a renderer.");
     }
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 12, 12, 12, 255);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 
     SDL_Texture *texture = loadBmpTexture("res/font.bmp", renderer);
@@ -55,6 +55,16 @@ int main(int argc, char **argv)
         "[]{}/\\|?.,"
         ":;\"'`-+=<>"
         "~_         ");
+    color_theme_t theme;
+    theme.comments = {194, 194, 194};
+    theme.numbers = {197, 15, 31};
+    theme.strings = {58, 150, 221};
+    theme.lists = {47, 92, 192};
+    theme.maps = {47, 92, 192};
+    theme.calls = {47, 92, 192};
+    theme.nulls = {249, 241, 165};
+    theme.cursor = {255, 255, 255};
+    theme.undefined = {255, 0, 0};
     SDL_Texture *bar16 = loadBmpTexture("res/bar16.bmp", renderer);
     SDL_Texture *placeholder24 = loadBmpTexture("res/24.bmp", renderer);
     SDL_Texture *placeholder32 = loadBmpTexture("res/32.bmp", renderer);
@@ -84,7 +94,7 @@ int main(int argc, char **argv)
             // Draw text editor
             SDL_Point to = {0, 24};
             SDL_Point bounds = {80, 24};
-            document.draw(to, bounds, &font, renderer);
+            document.draw(to, bounds, &theme, &font, renderer);
 
             // Draw status bar
             for (int width = 0; width < 640; width += 16)
