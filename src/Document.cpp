@@ -220,37 +220,149 @@ void Document::moveCursorRight()
     memory = cursor.x;
 }
 
-void Document::draw(SDL_Point to, SDL_Point bounds, FontSheet *font, SDL_Renderer *renderer)
+void Document::draw(SDL_Point to, SDL_Point bounds, color_theme_t *theme, FontSheet *font, SDL_Renderer *renderer)
 {
-    SDL_Color color = {255, 255, 255};
-    font->setColor(&color);
+    SDL_Point position = {0, 0};
+    SDL_Point min = {(cursor.x / bounds.x) * bounds.x, (cursor.y / bounds.y) * bounds.y};
+    SDL_Point max = {min.x + bounds.x, min.y + bounds.y};
+    auto escaping = false;
+    enum stream_state_t {
+        NOTHING_STREAM_STATE,
+        COMMENT_STREAM_STATE,
+        NUMBER_STREAM_STATE,
+        STRING_STREAM_STATE
+    };
+    auto state = NOTHING_STREAM_STATE;
 
-    SDL_Point origin = to;
-    SDL_Point offset = {(cursor.x / bounds.x) * bounds.x, (cursor.y / bounds.y) * bounds.y};
-    std::size_t size = lines.size();
-
-    for (std::size_t index = 0; index < bounds.y; index++)
+    for (auto line : lines)
     {
-        std::size_t adjustedIndex = index + offset.y;
-
-        if (adjustedIndex >= size)
+        for (auto symbol : line)
         {
-            break;
+            if (escaping)
+            {
+                escaping = false;
+            }
+            else
+            {
+                switch (symbol)
+                {
+                    case SYMBOL_ESCAPE:
+                        escaping = true;
+                        break;
+                    case SYMBOL_COMMENT:
+                        if (state == NOTHING_STREAM_STATE)
+                        {
+                            state = COMMENT_STREAM_STATE;
+                        }
+                        else if (state == COMMENT_STREAM_STATE)
+                        {
+                            state = NOTHING_STREAM_STATE;
+                        }
+
+                        break;
+                    case SYMBOL_NUMBER:
+                        if (state == NOTHING_STREAM_STATE)
+                        {
+                            state = NUMBER_STREAM_STATE;
+                        }
+                        else if (state == NUMBER_STREAM_STATE)
+                        {
+                            state = NOTHING_STREAM_STATE;
+                        }
+
+                        break;
+                    case SYMBOL_STRING:
+                        if (state == NOTHING_STREAM_STATE)
+                        {
+                            state = STRING_STREAM_STATE;
+                        }
+                        else if (state == STRING_STREAM_STATE)
+                        {
+                            state = NOTHING_STREAM_STATE;
+                        }
+
+                        break;
+                }
+
+                switch (symbol)
+                {
+                    case SYMBOL_ESCAPE:
+                        break;
+                    case SYMBOL_COMMENT:
+                        if (state == COMMENT_STREAM_STATE)
+                        {
+                            font->setColor(&theme->comments);
+                        }
+
+                        break;
+                    case SYMBOL_NUMBER:
+                        if (state == NUMBER_STREAM_STATE)
+                        {
+                            font->setColor(&theme->numbers);
+                        }
+
+                        break;
+                    case SYMBOL_STRING:
+                        if (state == STRING_STREAM_STATE)
+                        {
+                            font->setColor(&theme->strings);
+                        }
+
+                        break;
+                    case SYMBOL_LIST_START:
+                    case SYMBOL_LIST_END:
+                        if (state == NOTHING_STREAM_STATE)
+                        {
+                            font->setColor(&theme->lists);
+                        }
+
+                        break;
+                    case SYMBOL_MAP_START:
+                    case SYMBOL_MAP_END:
+                        if (state == NOTHING_STREAM_STATE)
+                        {
+                            font->setColor(&theme->maps);
+                        }
+
+                        break;
+                    case SYMBOL_CALL_START:
+                    case SYMBOL_CALL_END:
+                        if (state == NOTHING_STREAM_STATE)
+                        {
+                            font->setColor(&theme->calls);
+                        }
+
+                        break;
+                    case SYMBOL_NULL:
+                        if (state == NOTHING_STREAM_STATE)
+                        {
+                            font->setColor(&theme->nulls);
+                        }
+
+                        break;
+                    default:
+                        if (state == NOTHING_STREAM_STATE)
+                        {
+                            font->setColor(&theme->undefined);
+                        }
+
+                        break;
+                }
+            }
+
+            if (position.x >= min.x && position.x < max.x && position.y >= min.y && position.y < max.y)
+            {
+                auto text = std::string(1, symbol);
+                font->draw({to.x + ((position.x - min.x) * font->getFrameWidth()), to.y + ((position.y - min.y) * font->getFrameHeight())}, text, renderer);
+            }
+
+            position.x += 1;
         }
 
-        std::string line = lines[adjustedIndex];
-
-        if (line.length() >= offset.x)
-        {
-            std::string text = line.substr(offset.x, bounds.x);
-            font->draw(to, text, renderer);
-        }
-
-        to.y += font->getFrameHeight();
+        position.x = 0;
+        position.y += 1;
     }
 
-    color = {0, 255, 0};
-    font->setColor(&color);
-    to = {origin.x + ((cursor.x - offset.x) * font->getFrameWidth()), origin.y + ((cursor.y - offset.y) * font->getFrameHeight())};
-    font->draw(to, "_", renderer);
+    font->setColor(&theme->cursor);
+    font->draw({to.x + ((cursor.x - min.x) * font->getFrameWidth()), to.y + ((cursor.y - min.y) * font->getFrameHeight())}, "_", renderer);
 }
