@@ -65,9 +65,9 @@ int main(int argc, char **argv)
     theme.nulls = {249, 241, 165};
     theme.cursor = {255, 255, 255};
     theme.undefined = {255, 0, 0};
-    SDL_Texture *bar16 = loadBmpTexture("res/bar16.bmp", renderer);
-    SDL_Texture *placeholder24 = loadBmpTexture("res/24.bmp", renderer);
-    SDL_Texture *placeholder32 = loadBmpTexture("res/32.bmp", renderer);
+    SDL_Texture *toolbar = loadBmpTexture("res/toolbar.bmp", renderer);
+    SDL_Texture *statusbar = loadBmpTexture("res/statusbar.bmp", renderer);
+    SDL_Texture *check = loadBmpTexture("res/check.bmp", renderer);
     Document document = argc > 1 ? Document(argv[1]) : Document();
     bool quit = false;
     bool redraw = true;
@@ -86,7 +86,12 @@ int main(int argc, char **argv)
             SDL_RenderClear(renderer);
 
             // Draw tool bar
-            drawTexture(placeholder24, 0, 0, 24, 24, renderer);
+            for (int width = 0; width < 640; width += 24)
+            {
+                drawTexture(toolbar, width, 0, 24, 24, renderer);
+            }
+
+            drawTexture(check, 0, 0, 24, 24, renderer);
 
             // Draw text editor
             SDL_Point to = {0, 24};
@@ -96,7 +101,7 @@ int main(int argc, char **argv)
             // Draw status bar
             for (int width = 0; width < 640; width += 16)
             {
-                drawTexture(bar16, width, 312, 16, 16, renderer);
+                drawTexture(statusbar, width, 312, 16, 16, renderer);
             }
 
             to = {0, 316};
