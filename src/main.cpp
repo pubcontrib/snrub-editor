@@ -86,10 +86,7 @@ int main(int argc, char **argv)
             SDL_RenderClear(renderer);
 
             // Draw tool bar
-            for (int width = 0; width < 640; width += 24)
-            {
-                drawTexture(placeholder24, width, 0, 24, 24, renderer);
-            }
+            drawTexture(placeholder24, 0, 0, 24, 24, renderer);
 
             // Draw text editor
             SDL_Point to = {0, 24};
@@ -186,6 +183,33 @@ int main(int argc, char **argv)
                     document.addText(event.text.text);
                     redraw = true;
                     break;
+                case SDL_MOUSEBUTTONDOWN:
+                    if (event.button.button == SDL_BUTTON_LEFT)
+                    {
+                        SDL_Point click = {event.button.x, event.button.y};
+                        SDL_Rect acceptBox = {0, 0, 24, 24};
+
+                        if (SDL_PointInRect(&click, &acceptBox))
+                        {
+                            if (argc > 1)
+                            {
+                                auto saved = document.save(std::string(argv[1]));
+
+                                if (saved)
+                                {
+                                    return 0;
+                                }
+                                else
+                                {
+                                    crash("Failed to save to file.");
+                                }
+                            }
+                            else
+                            {
+                                crash("No file to save to.");
+                            }
+                        }
+                    }
             }
         }
 
