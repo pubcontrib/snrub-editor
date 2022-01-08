@@ -222,6 +222,30 @@ void Document::moveCursorRight()
     memory = cursor.x;
 }
 
+void Document::movePageUp(SDL_Point bounds)
+{
+    cursor.y -= bounds.y;
+
+    if (cursor.y < 0)
+    {
+        cursor.y = 0;
+    }
+
+    cursor.x = std::min(memory, (int) lines[cursor.y].length());
+}
+
+void Document::movePageDown(SDL_Point bounds)
+{
+    cursor.y += bounds.y;
+
+    if (cursor.y >= lines.size())
+    {
+        cursor.y = lines.size() - 1;
+    }
+
+    cursor.x = std::min(memory, (int) lines[cursor.y].length());
+}
+
 void Document::draw(SDL_Point to, SDL_Point bounds, color_theme_t *theme, FontSheet *font, SDL_Renderer *renderer)
 {
     SDL_Point position = {0, 0};

@@ -76,6 +76,7 @@ int main(int argc, char **argv)
     int lastFps = 0;
     int currentFps = 0;
     int targetFps = 60;
+    SDL_Point bounds = {80, 24};
 
     while (!quit)
     {
@@ -95,7 +96,6 @@ int main(int argc, char **argv)
 
             // Draw text editor
             SDL_Point to = {0, 24};
-            SDL_Point bounds = {80, 24};
             document.draw(to, bounds, &theme, &font, renderer);
 
             // Draw status bar
@@ -178,6 +178,14 @@ int main(int argc, char **argv)
                             break;
                         case SDLK_RIGHT:
                             document.moveCursorRight();
+                            redraw = true;
+                            break;
+                        case SDLK_PAGEUP:
+                            document.movePageUp(bounds);
+                            redraw = true;
+                            break;
+                        case SDLK_PAGEDOWN:
+                            document.movePageDown(bounds);
                             redraw = true;
                             break;
                     }
