@@ -29,7 +29,10 @@ Document::Document(std::string filePath)
             lines.push_back(line);
         }
 
-        lines.push_back(line);
+        if (line.empty())
+        {
+            lines.push_back(line);
+        }
     }
     else
     {
