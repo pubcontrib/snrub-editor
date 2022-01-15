@@ -210,7 +210,8 @@ int main(int argc, char **argv)
 
                                 if (saved)
                                 {
-                                    return 0;
+                                    quit = 1;
+                                    break;
                                 }
                                 else
                                 {
