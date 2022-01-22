@@ -141,7 +141,6 @@ int main(int argc, char **argv)
                     quit = true;
                     break;
                 case SDL_KEYDOWN:
-                {
                     switch (event.key.keysym.sym)
                     {
                         case SDLK_ESCAPE:
@@ -191,7 +190,24 @@ int main(int argc, char **argv)
                     }
 
                     break;
-                }
+                case SDL_KEYUP:
+                    switch (event.key.keysym.sym)
+                    {
+                        case SDLK_RETURN:
+                        case SDLK_TAB:
+                        case SDLK_DELETE:
+                        case SDLK_BACKSPACE:
+                        case SDLK_UP:
+                        case SDLK_DOWN:
+                        case SDLK_LEFT:
+                        case SDLK_RIGHT:
+                        case SDLK_PAGEUP:
+                        case SDLK_PAGEDOWN:
+                            redraw = true;
+                            break;
+                    }
+
+                    break;
                 case SDL_TEXTINPUT:
                     document.addText(event.text.text);
                     redraw = true;
