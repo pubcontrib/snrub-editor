@@ -3,10 +3,9 @@
 #include <SDL2/SDL.h>
 #include <string>
 
-FontSheet::FontSheet(SpriteSheet *sheet, std::string symbols)
+FontSheet::FontSheet(SpriteSheet *sheet)
 {
     this->sheet = sheet;
-    this->symbols = symbols;
 }
 
 int FontSheet::getFrameWidth()
@@ -32,23 +31,21 @@ void FontSheet::draw(SDL_Point to, std::string text, SDL_Renderer *renderer)
 
     for (size_t index = 0; index < length; index++)
     {
-        char symbol = text[index];
+        unsigned char symbol = text[index];
 
-        if (symbol != ' ')
+        if (symbol >= 32 && symbol <= 126)
         {
-            size_t match = symbols.find(symbol);
-
-            if (match != std::string::npos)
-            {
-                SDL_Point from = {(int) (match % 10), (int) (match / 10)};
-                sheet->draw(&to, &from, renderer);
-            }
-            else
-            {
-                SDL_Point from = {0, 11};
-                sheet->draw(&to, &from, renderer);
-            }
+            // Use the ASCII code as the position in the sprite sheet
+            symbol -= 31;
         }
+        else
+        {
+            // Otherwise use the 0th index which is reserved for undefined
+            symbol = 0;
+        }
+
+        SDL_Point from = {symbol, 0};
+        sheet->draw(&to, &from, renderer);
 
         to.x += this->sheet->getFrameWidth();
     }

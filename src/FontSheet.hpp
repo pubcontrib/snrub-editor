@@ -8,10 +8,9 @@
 class FontSheet
 {
     SpriteSheet *sheet;
-    std::string symbols;
 
     public:
-        FontSheet(SpriteSheet *sheet, std::string symbols);
+        FontSheet(SpriteSheet *sheet);
         int getFrameWidth();
         int getFrameHeight();
         void setColor(SDL_Color *color);
