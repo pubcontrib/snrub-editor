@@ -44,17 +44,7 @@ int main(int argc, char **argv)
 
     SDL_Texture *texture = loadBmpTexture("res/font.bmp", renderer);
     SpriteSheet sheet(texture, 8, 12);
-    FontSheet font(&sheet, "0123456789"
-        "ABCDEFGHIJ"
-        "KLMNOPQRST"
-        "UVWXYZ    "
-        "abcdefghij"
-        "klmnopqrst"
-        "uvwxyz    "
-        "!@#$%^&*()"
-        "[]{}/\\|?.,"
-        ":;\"'`-+=<>"
-        "~_         ");
+    FontSheet font(&sheet);
     color_theme_t theme;
     theme.comments = {194, 194, 194};
     theme.numbers = {197, 15, 31};
