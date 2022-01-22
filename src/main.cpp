@@ -140,6 +140,13 @@ int main(int argc, char **argv)
                     std::cerr << "Quit detected." << std::endl;
                     quit = true;
                     break;
+                case SDL_WINDOWEVENT:
+                    if (event.window.event == SDL_WINDOWEVENT_EXPOSED)
+                    {
+                        redraw = true;
+                    }
+
+                    break;
                 case SDL_KEYDOWN:
                     switch (event.key.keysym.sym)
                     {
