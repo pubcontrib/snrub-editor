@@ -257,7 +257,7 @@ int main(int argc, char **argv)
                         {
                             scale = scale == 1 ? 2 : 1;
                             SDL_RenderSetScale(renderer, scale, scale);
-                            SDL_SetWindowSize(window, 640 * scale, 328 * scale);
+                            SDL_SetWindowSize(window, width * scale, height * scale);
                             break;
                         }
                     }
