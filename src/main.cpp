@@ -23,7 +23,10 @@ int main(int argc, char **argv)
 
     atexit(SDL_Quit);
 
-    SDL_Window *window = SDL_CreateWindow("snrub-editor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 328, SDL_WINDOW_SHOWN);
+    int width = 640;
+    int height = 328;
+    int scale = 1;
+    SDL_Window *window = SDL_CreateWindow("snrub-editor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
 
     if (!window)
     {
@@ -213,7 +216,7 @@ int main(int argc, char **argv)
                     if (event.button.button == SDL_BUTTON_LEFT)
                     {
                         SDL_Point click = {event.button.x, event.button.y};
-                        SDL_Rect acceptBox = {0, 0, 24, 24};
+                        SDL_Rect acceptBox = {0, 0, 24 * scale, 24 * scale};
 
                         if (SDL_PointInRect(&click, &acceptBox))
                         {
@@ -235,6 +238,15 @@ int main(int argc, char **argv)
                             {
                                 crash("No file to save to.");
                             }
+                        }
+
+                        SDL_Rect scaleBox = {24, 0, 24 * scale, 24 * scale};
+
+                        if (SDL_PointInRect(&click, &scaleBox))
+                        {
+                            scale = scale == 1 ? 2 : 1;
+                            SDL_RenderSetScale(renderer, scale, scale);
+                            SDL_SetWindowSize(window, 640 * scale, 328 * scale);
                         }
                     }
 
