@@ -227,7 +227,7 @@ int main(int argc, char **argv)
                     if (event.button.button == SDL_BUTTON_LEFT)
                     {
                         SDL_Point click = {event.button.x, event.button.y};
-                        SDL_Rect acceptBox = {0, 0, 24 * scale, 24 * scale};
+                        SDL_Rect acceptBox = {0 * scale, 0 * scale, 24 * scale, 24 * scale};
 
                         if (SDL_PointInRect(&click, &acceptBox))
                         {
@@ -251,7 +251,7 @@ int main(int argc, char **argv)
                             }
                         }
 
-                        SDL_Rect scaleBox = {24, 0, 24 * scale, 24 * scale};
+                        SDL_Rect scaleBox = {24 * scale, 0 * scale, 24 * scale, 24 * scale};
 
                         if (SDL_PointInRect(&click, &scaleBox))
                         {
