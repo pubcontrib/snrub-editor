@@ -48,24 +48,38 @@ int main(int argc, char **argv)
     SDL_Texture *texture = loadBmpTexture("res/font.bmp", renderer);
     SpriteSheet sheet(texture, 8, 12);
     FontSheet font(&sheet);
-    color_theme_t theme;
-    theme.comments = {194, 194, 194};
-    theme.numbers = {197, 15, 31};
-    theme.strings = {58, 150, 221};
-    theme.lists = {47, 92, 192};
-    theme.maps = {47, 92, 192};
-    theme.calls = {47, 92, 192};
-    theme.nulls = {249, 241, 165};
-    theme.cursor = {255, 255, 255};
-    theme.undefined = {255, 0, 0};
+    color_theme_t plainTheme;
+    plainTheme.comments = {255, 255, 255};
+    plainTheme.numbers = {255, 255, 255};
+    plainTheme.strings = {255, 255, 255};
+    plainTheme.lists = {255, 255, 255};
+    plainTheme.maps = {255, 255, 255};
+    plainTheme.calls = {255, 255, 255};
+    plainTheme.nulls = {255, 255, 255};
+    plainTheme.cursor = {255, 255, 255};
+    plainTheme.undefined = {255, 255, 255};
+    color_theme_t highlightedTheme;
+    highlightedTheme.comments = {194, 194, 194};
+    highlightedTheme.numbers = {197, 15, 31};
+    highlightedTheme.strings = {58, 150, 221};
+    highlightedTheme.lists = {47, 92, 192};
+    highlightedTheme.maps = {47, 92, 192};
+    highlightedTheme.calls = {47, 92, 192};
+    highlightedTheme.nulls = {249, 241, 165};
+    highlightedTheme.cursor = {255, 255, 255};
+    highlightedTheme.undefined = {255, 0, 0};
+    color_theme_t theme = highlightedTheme;
     SDL_Texture *toolbar = loadBmpTexture("res/toolbar.bmp", renderer);
     SDL_Texture *statusbar = loadBmpTexture("res/statusbar.bmp", renderer);
     SDL_Texture *check = loadBmpTexture("res/check.bmp", renderer);
     SDL_Texture *oneX = loadBmpTexture("res/1x.bmp", renderer);
     SDL_Texture *twoX = loadBmpTexture("res/2x.bmp", renderer);
+    SDL_Texture *toggle = loadBmpTexture("res/toggle.bmp", renderer);
+    SpriteSheet toggleSheet(toggle, 24, 24);
     Document document = argc > 1 ? Document(argv[1]) : Document();
     bool quit = false;
     bool redraw = true;
+    bool highlighted = true;
     Uint32 lastUpdate = SDL_GetTicks();
     Uint32 lastMeasure = SDL_GetTicks();
     int lastFps = 0;
@@ -98,8 +112,12 @@ int main(int argc, char **argv)
                 drawTexture(oneX, 24, 0, 24, 24, renderer);
             }
 
+            SDL_Point to = {48, 0};
+            SDL_Point cell = {highlighted ? 0 : 1, 0};
+            toggleSheet.draw(&to, &cell, renderer);
+
             // Draw text editor
-            SDL_Point to = {0, 24};
+            to = {0, 24};
             document.draw(to, bounds, &theme, &font, renderer);
 
             // Draw status bar
@@ -258,6 +276,16 @@ int main(int argc, char **argv)
                             scale = scale == 1 ? 2 : 1;
                             SDL_RenderSetScale(renderer, scale, scale);
                             SDL_SetWindowSize(window, width * scale, height * scale);
+                            break;
+                        }
+
+                        SDL_Rect highlightBox = {48 * scale, 0 * scale, 24 * scale, 24 * scale};
+
+                        if (SDL_PointInRect(&click, &highlightBox))
+                        {
+                            highlighted = !highlighted;
+                            theme = highlighted ? highlightedTheme : plainTheme;
+                            redraw = true;
                             break;
                         }
                     }
