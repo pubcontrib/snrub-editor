@@ -7,9 +7,11 @@ EXE = snrub-editor
 SRC = src
 OBJ = obj
 BIN = bin
+RES = res
 PREFIX = /usr/local
 EXEC_PREFIX = $(PREFIX)
 BINDIR = $(EXEC_PREFIX)/bin
+DATADIR = $(PREFIX)/share
 OBJS = $(OBJ)/main.o \
 	$(OBJ)/Document.o \
 	$(OBJ)/FontSheet.o \
@@ -25,9 +27,12 @@ clean:
 
 install: $(BIN)/$(EXE)
 	$(CP) $(BIN)/$(EXE) $(BINDIR)/$(EXE)
+	$(MKDIR) -p $(DATADIR)/$(EXE)/$(RES)
+	$(CP) -r $(RES) $(DATADIR)/$(EXE)
 
 uninstall:
 	$(RM) -f $(BINDIR)/$(EXE)
+	$(RM) -fr $(DATADIR)/$(EXE)
 
 $(BIN)/$(EXE): $(OBJS)
 	$(MKDIR) -p $(BIN)
