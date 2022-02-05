@@ -3,6 +3,7 @@
 #include "SpriteSheet.hpp"
 #include "Common.hpp"
 #include <SDL2/SDL.h>
+#include <filesystem>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -45,7 +46,19 @@ int main(int argc, char **argv)
     SDL_SetRenderDrawColor(renderer, 12, 12, 12, 255);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 
-    SDL_Texture *texture = loadBmpTexture("res/font.bmp", renderer);
+    std::filesystem::path res("res");
+
+    if (!std::filesystem::is_directory(res))
+    {
+        res = std::filesystem::path("/usr/local/share/snrub-editor/res");
+    }
+
+    if (!std::filesystem::is_directory(res))
+    {
+        crash("Failed to locate resources directory.");
+    }
+
+    SDL_Texture *texture = loadBmpTexture(res / "font.bmp", renderer);
     SpriteSheet sheet(texture, 8, 12);
     FontSheet font(&sheet);
     color_theme_t plainTheme;
@@ -69,12 +82,12 @@ int main(int argc, char **argv)
     highlightedTheme.cursor = {255, 255, 255};
     highlightedTheme.undefined = {255, 0, 0};
     color_theme_t theme = highlightedTheme;
-    SDL_Texture *toolbar = loadBmpTexture("res/toolbar.bmp", renderer);
-    SDL_Texture *statusbar = loadBmpTexture("res/statusbar.bmp", renderer);
-    SDL_Texture *check = loadBmpTexture("res/check.bmp", renderer);
-    SDL_Texture *oneX = loadBmpTexture("res/1x.bmp", renderer);
-    SDL_Texture *twoX = loadBmpTexture("res/2x.bmp", renderer);
-    SDL_Texture *toggle = loadBmpTexture("res/toggle.bmp", renderer);
+    SDL_Texture *toolbar = loadBmpTexture(res / "toolbar.bmp", renderer);
+    SDL_Texture *statusbar = loadBmpTexture(res / "statusbar.bmp", renderer);
+    SDL_Texture *check = loadBmpTexture(res / "check.bmp", renderer);
+    SDL_Texture *oneX = loadBmpTexture(res / "1x.bmp", renderer);
+    SDL_Texture *twoX = loadBmpTexture(res / "2x.bmp", renderer);
+    SDL_Texture *toggle = loadBmpTexture(res / "toggle.bmp", renderer);
     SpriteSheet toggleSheet(toggle, 24, 24);
     Document document = argc > 1 ? Document(argv[1]) : Document();
     bool quit = false;
