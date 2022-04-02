@@ -43,7 +43,7 @@ int main(int argc, char **argv)
         crash("Failed to create a renderer.");
     }
 
-    SDL_SetRenderDrawColor(renderer, 12, 12, 12, 255);
+    SDL_SetRenderDrawColor(renderer, 8, 8, 8, 255);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 
     std::filesystem::path res("res");
@@ -73,14 +73,14 @@ int main(int argc, char **argv)
     plainTheme.undefined = {255, 255, 255};
     color_theme_t highlightedTheme;
     highlightedTheme.comments = {194, 194, 194};
-    highlightedTheme.numbers = {197, 15, 31};
-    highlightedTheme.strings = {58, 150, 221};
-    highlightedTheme.lists = {47, 92, 192};
-    highlightedTheme.maps = {47, 92, 192};
+    highlightedTheme.numbers = {195, 90, 190};
+    highlightedTheme.strings = {78, 168, 238};
+    highlightedTheme.lists = {136, 22, 131};
+    highlightedTheme.maps = {167, 52, 48};
     highlightedTheme.calls = {47, 92, 192};
-    highlightedTheme.nulls = {249, 241, 165};
+    highlightedTheme.nulls = {218, 19, 12};
     highlightedTheme.cursor = {255, 255, 255};
-    highlightedTheme.undefined = {255, 0, 0};
+    highlightedTheme.undefined = {0, 255, 20};
     color_theme_t theme = highlightedTheme;
     SDL_Texture *toolbar = loadBmpTexture(res / "toolbar.bmp", renderer);
     SDL_Texture *statusbar = loadBmpTexture(res / "statusbar.bmp", renderer);
