@@ -76,8 +76,8 @@ int Document::getCursorLineIndex()
 
 void Document::addNewline()
 {
-    std::string line = lines[cursor.y];
-    std::vector<std::string>::iterator iterator = lines.begin() + cursor.y + 1;
+    auto line = lines[cursor.y];
+    auto iterator = lines.begin() + cursor.y + 1;
 
     if (cursor.x < line.length())
     {
@@ -96,11 +96,11 @@ void Document::addNewline()
 
 void Document::addTab()
 {
-    int width = 2;
-    int fill = width - (cursor.x % width);
+    auto width = 2;
+    auto fill = width - (cursor.x % width);
     std::string space = "";
 
-    for (int index = 0; index < fill; index++)
+    for (auto index = 0; index < fill; index++)
     {
         space += " ";
     }
@@ -110,7 +110,7 @@ void Document::addTab()
 
 void Document::addText(std::string text)
 {
-    std::string line = lines[cursor.y];
+    auto line = lines[cursor.y];
 
     if (cursor.x < line.length())
     {
@@ -128,17 +128,17 @@ void Document::addText(std::string text)
 
 void Document::removeForward()
 {
-    std::string line = lines[cursor.y];
+    auto line = lines[cursor.y];
 
     if (cursor.x == line.length() && cursor.y < lines.size() - 1)
     {
-        std::vector<std::string>::iterator iterator = lines.begin() + cursor.y + 1;
+        auto iterator = lines.begin() + cursor.y + 1;
         lines[cursor.y] = line + lines[cursor.y + 1];
         lines.erase(iterator);
     }
     else if (cursor.x < line.length())
     {
-        std::string::iterator iterator = line.begin() + cursor.x;
+        auto iterator = line.begin() + cursor.x;
         line.erase(iterator);
         lines[cursor.y] = line;
     }
@@ -146,11 +146,11 @@ void Document::removeForward()
 
 void Document::removeBackward()
 {
-    std::string line = lines[cursor.y];
+    auto line = lines[cursor.y];
 
     if (line.length() == 0 && cursor.y > 0)
     {
-        std::vector<std::string>::iterator iterator = lines.begin() + cursor.y;
+        auto iterator = lines.begin() + cursor.y;
         lines.erase(iterator);
         cursor.y -= 1;
         cursor.x = lines[cursor.y].length();
@@ -159,7 +159,7 @@ void Document::removeBackward()
     {
         if (cursor.x == 0 && cursor.y > 0)
         {
-            std::vector<std::string>::iterator iterator = lines.begin() + cursor.y;
+            auto iterator = lines.begin() + cursor.y;
             lines.erase(iterator);
             cursor.x = lines[cursor.y - 1].length();
             lines[cursor.y - 1] += line;
@@ -167,7 +167,7 @@ void Document::removeBackward()
         }
         else if (cursor.x > 0)
         {
-            std::string::iterator iterator = line.begin() + cursor.x - 1;
+            auto iterator = line.begin() + cursor.x - 1;
             line.erase(iterator);
             lines[cursor.y] = line;
             cursor.x -= 1;

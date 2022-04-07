@@ -24,10 +24,10 @@ int main(int argc, char **argv)
 
     atexit(SDL_Quit);
 
-    int width = 640;
-    int height = 328;
-    int scale = 1;
-    SDL_Window *window = SDL_CreateWindow("snrub-editor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+    auto width = 640;
+    auto height = 328;
+    auto scale = 1;
+    auto window = SDL_CreateWindow("snrub-editor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
 
     if (!window)
     {
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 
     SDL_SetWindowResizable(window, SDL_FALSE);
 
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
+    auto renderer = SDL_CreateRenderer(window, -1, 0);
 
     if (!renderer)
     {
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
         crash("Failed to locate resources directory.");
     }
 
-    SDL_Texture *texture = loadBmpTexture(res / "font.bmp", renderer);
+    auto texture = loadBmpTexture(res / "font.bmp", renderer);
     SpriteSheet sheet(texture, 8, 12);
     FontSheet font(&sheet);
     color_theme_t plainTheme;
@@ -81,23 +81,23 @@ int main(int argc, char **argv)
     highlightedTheme.nulls = {218, 19, 12};
     highlightedTheme.cursor = {255, 255, 255};
     highlightedTheme.undefined = {0, 255, 20};
-    color_theme_t theme = highlightedTheme;
-    SDL_Texture *toolbar = loadBmpTexture(res / "toolbar.bmp", renderer);
-    SDL_Texture *statusbar = loadBmpTexture(res / "statusbar.bmp", renderer);
-    SDL_Texture *check = loadBmpTexture(res / "check.bmp", renderer);
-    SDL_Texture *oneX = loadBmpTexture(res / "1x.bmp", renderer);
-    SDL_Texture *twoX = loadBmpTexture(res / "2x.bmp", renderer);
-    SDL_Texture *toggle = loadBmpTexture(res / "toggle.bmp", renderer);
+    auto theme = highlightedTheme;
+    auto toolbar = loadBmpTexture(res / "toolbar.bmp", renderer);
+    auto statusbar = loadBmpTexture(res / "statusbar.bmp", renderer);
+    auto check = loadBmpTexture(res / "check.bmp", renderer);
+    auto oneX = loadBmpTexture(res / "1x.bmp", renderer);
+    auto twoX = loadBmpTexture(res / "2x.bmp", renderer);
+    auto toggle = loadBmpTexture(res / "toggle.bmp", renderer);
     SpriteSheet toggleSheet(toggle, 24, 24);
-    Document document = argc > 1 ? Document(argv[1]) : Document();
-    bool quit = false;
-    bool redraw = true;
-    bool highlighted = true;
-    Uint32 lastUpdate = SDL_GetTicks();
-    Uint32 lastMeasure = SDL_GetTicks();
-    int lastFps = 0;
-    int currentFps = 0;
-    int targetFps = 60;
+    auto document = argc > 1 ? Document(argv[1]) : Document();
+    auto quit = false;
+    auto redraw = true;
+    auto highlighted = true;
+    auto lastUpdate = SDL_GetTicks();
+    auto lastMeasure = SDL_GetTicks();
+    auto lastFps = 0;
+    auto currentFps = 0;
+    auto targetFps = 60;
     SDL_Point bounds = {80, 24};
 
     while (!quit)
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
             SDL_RenderClear(renderer);
 
             // Draw tool bar
-            for (int width = 0; width < 640; width += 24)
+            for (auto width = 0; width < 640; width += 24)
             {
                 drawTexture(toolbar, width, 0, 24, 24, renderer);
             }
@@ -134,13 +134,13 @@ int main(int argc, char **argv)
             document.draw(to, bounds, &theme, &font, renderer);
 
             // Draw status bar
-            for (int width = 0; width < 640; width += 16)
+            for (auto width = 0; width < 640; width += 16)
             {
                 drawTexture(statusbar, width, 312, 16, 16, renderer);
             }
 
             to = {0, 316};
-            std::string line = " L "
+            auto line = " L "
                 + std::to_string(document.getCursorLineIndex())
                 + "/"
                 + std::to_string(document.getLineCount())
@@ -319,8 +319,8 @@ int main(int argc, char **argv)
         currentFps += 1;
 
         // Sleep until the next expected update frame
-        Uint32 duration = SDL_GetTicks() - lastUpdate;
-        int target = 1000 / targetFps;
+        auto duration = SDL_GetTicks() - lastUpdate;
+        auto target = 1000 / targetFps;
 
         if (duration < target)
         {

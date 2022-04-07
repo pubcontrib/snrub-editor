@@ -5,7 +5,7 @@
 
 SDL_Texture *loadBmpTexture(std::string path, SDL_Renderer *renderer)
 {
-    SDL_Surface *surface = SDL_LoadBMP(path.c_str());
+    auto surface = SDL_LoadBMP(path.c_str());
 
     if (!surface)
     {
@@ -14,7 +14,7 @@ SDL_Texture *loadBmpTexture(std::string path, SDL_Renderer *renderer)
 
     SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 255, 0, 255));
 
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    auto texture = SDL_CreateTextureFromSurface(renderer, surface);
 
     if (!texture)
     {
