@@ -25,13 +25,11 @@ void FontSheet::setColor(SDL_Color *color)
 
 void FontSheet::draw(SDL_Point to, std::string text, SDL_Renderer *renderer)
 {
-    size_t length;
+    auto length = text.length();
 
-    length = text.length();
-
-    for (size_t index = 0; index < length; index++)
+    for (auto index = 0; index < length; index++)
     {
-        unsigned char symbol = text[index];
+        auto symbol = text[index];
 
         if (symbol >= 32 && symbol <= 126)
         {
