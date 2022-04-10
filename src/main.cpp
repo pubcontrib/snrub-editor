@@ -5,8 +5,23 @@
 #include <SDL2/SDL.h>
 #include <filesystem>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
+
+std::string readFile(std::string path)
+{
+    std::ifstream stream(path);
+
+    if (stream.is_open())
+    {
+        return std::string((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
+    }
+    else
+    {
+        return "`Unable to load file.`";
+    }
+}
 
 void drawTexture(SDL_Texture *texture, int x, int y, int width, int height, SDL_Renderer *renderer)
 {
@@ -89,7 +104,7 @@ int main(int argc, char **argv)
     auto twoX = loadBmpTexture(res / "2x.bmp", renderer);
     auto toggle = loadBmpTexture(res / "toggle.bmp", renderer);
     SpriteSheet toggleSheet(toggle, 24, 24);
-    auto document = argc > 1 ? Document(argv[1]) : Document();
+    auto document = argc > 1 ? Document(readFile(argv[1])) : Document("");
     auto quit = false;
     auto redraw = true;
     auto highlighted = true;
