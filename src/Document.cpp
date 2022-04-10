@@ -1,7 +1,6 @@
 #include "Document.hpp"
 #include <vector>
 #include <string>
-#include <algorithm>
 
 Document::Document(std::string text)
 {
