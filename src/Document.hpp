@@ -20,7 +20,7 @@ class Document
         size_t getLinesCapacity();
         std::vector<std::string> getLines();
         void addNewline();
-        void addTab();
+        void addIndent(size_t width);
         void addText(std::string text);
         void removeForward();
         void removeBackward();
