@@ -81,7 +81,7 @@ void Document::addTab()
     auto fill = width - (cursorX % width);
     std::string space = "";
 
-    for (auto index = 0; index < fill; index++)
+    for (size_t index = 0; index < fill; index++)
     {
         space += " ";
     }
