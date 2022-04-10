@@ -23,6 +23,21 @@ std::string readFile(std::string path)
     }
 }
 
+bool writeFile(std::string path, std::string text)
+{
+    std::ofstream stream(path);
+
+    if (stream.is_open())
+    {
+        stream << text;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void drawTexture(SDL_Texture *texture, int x, int y, int width, int height, SDL_Renderer *renderer)
 {
     SDL_Rect source = {0, 0, width, height};
@@ -279,7 +294,8 @@ int main(int argc, char **argv)
                         {
                             if (argc > 1)
                             {
-                                auto saved = document.save(std::string(argv[1]));
+                                auto text = document.copyToString();
+                                auto saved = writeFile(std::string(argv[1]), text);
 
                                 if (saved)
                                 {

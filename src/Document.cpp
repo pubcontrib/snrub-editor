@@ -1,5 +1,4 @@
 #include "Document.hpp"
-#include <fstream>
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -225,6 +224,28 @@ void Document::movePageDown(SDL_Point bounds)
     cursor.x = std::min(memory, (int) lines[cursor.y].length());
 }
 
+std::string Document::copyToString()
+{
+    std::string text = "";
+    auto first = true;
+
+    for (auto line : lines)
+    {
+        if (!first)
+        {
+            text.push_back('\n');
+        }
+        else
+        {
+            first = false;
+        }
+
+        text.append(line);
+    }
+
+    return text;
+}
+
 void Document::draw(SDL_Point to, SDL_Point bounds, color_theme_t *theme, FontSheet *font, SDL_Renderer *renderer)
 {
     SDL_Point position = {0, 0};
@@ -370,36 +391,4 @@ void Document::draw(SDL_Point to, SDL_Point bounds, color_theme_t *theme, FontSh
 
     font->setColor(&theme->cursor);
     font->draw({to.x + ((cursor.x - min.x) * font->getFrameWidth()), to.y + ((cursor.y - min.y) * font->getFrameHeight())}, "_", renderer);
-}
-
-bool Document::save(std::string filePath)
-{
-    std::ofstream fileStream(filePath);
-
-    if (fileStream.is_open())
-    {
-        auto first = true;
-
-        for (auto line : lines)
-        {
-            if (!first)
-            {
-                fileStream << '\n';
-            }
-            else
-            {
-                first = false;
-            }
-
-            fileStream << line;
-        }
-
-        fileStream.close();
-        return true;
-    }
-    else
-    {
-        fileStream.close();
-        return false;
-    }
 }
