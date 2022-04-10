@@ -6,7 +6,8 @@
 Document::Document(std::string text)
 {
     lines = std::vector<std::string>();
-    cursor = {0, 0};
+    cursorX = 0;
+    cursorY = 0;
     memory = 0;
 
     std::string buffer = "";
@@ -29,50 +30,55 @@ Document::Document(std::string text)
     lines.push_back(buffer);
 }
 
-int Document::getColumnCount()
+size_t Document::getCursorX()
 {
-    return lines[cursor.y].length();
+    return cursorX;
 }
 
-int Document::getCursorColumnIndex()
+size_t Document::getCursorY()
 {
-    return cursor.x + 1;
+    return cursorY;
 }
 
-int Document::getLineCount()
+size_t Document::getColumnsCapacity()
+{
+    return lines[cursorY].length();
+}
+
+size_t Document::getLinesCapacity()
 {
     return lines.size();
 }
 
-int Document::getCursorLineIndex()
+std::vector<std::string> Document::getLines()
 {
-    return cursor.y + 1;
+    return lines;
 }
 
 void Document::addNewline()
 {
-    auto line = lines[cursor.y];
-    auto iterator = lines.begin() + cursor.y + 1;
+    auto line = lines[cursorY];
+    auto iterator = lines.begin() + cursorY + 1;
 
-    if (cursor.x < line.length())
+    if (cursorX < line.length())
     {
-        lines.insert(iterator, line.substr(cursor.x));
-        lines[cursor.y] = line.substr(0, cursor.x);
+        lines.insert(iterator, line.substr(cursorX));
+        lines[cursorY] = line.substr(0, cursorX);
     }
     else
     {
         lines.insert(iterator, "");
     }
 
-    cursor.x = 0;
-    cursor.y++;
-    memory = cursor.x;
+    cursorX = 0;
+    cursorY += 1;
+    memory = cursorX;
 }
 
 void Document::addTab()
 {
     auto width = 2;
-    auto fill = width - (cursor.x % width);
+    auto fill = width - (cursorX % width);
     std::string space = "";
 
     for (auto index = 0; index < fill; index++)
@@ -85,143 +91,143 @@ void Document::addTab()
 
 void Document::addText(std::string text)
 {
-    auto line = lines[cursor.y];
+    auto line = lines[cursorY];
 
-    if (cursor.x < line.length())
+    if (cursorX < line.length())
     {
-        line.insert(cursor.x, text);
+        line.insert(cursorX, text);
     }
     else
     {
         line.append(text);
     }
 
-    lines[cursor.y] = line;
-    cursor.x += text.length();
-    memory = cursor.x;
+    lines[cursorY] = line;
+    cursorX += text.length();
+    memory = cursorX;
 }
 
 void Document::removeForward()
 {
-    auto line = lines[cursor.y];
+    auto line = lines[cursorY];
 
-    if (cursor.x == line.length() && cursor.y < lines.size() - 1)
+    if (cursorX == line.length() && cursorY < lines.size() - 1)
     {
-        auto iterator = lines.begin() + cursor.y + 1;
-        lines[cursor.y] = line + lines[cursor.y + 1];
+        auto iterator = lines.begin() + cursorY + 1;
+        lines[cursorY] = line + lines[cursorY + 1];
         lines.erase(iterator);
     }
-    else if (cursor.x < line.length())
+    else if (cursorX < line.length())
     {
-        auto iterator = line.begin() + cursor.x;
+        auto iterator = line.begin() + cursorX;
         line.erase(iterator);
-        lines[cursor.y] = line;
+        lines[cursorY] = line;
     }
 }
 
 void Document::removeBackward()
 {
-    auto line = lines[cursor.y];
+    auto line = lines[cursorY];
 
-    if (line.length() == 0 && cursor.y > 0)
+    if (line.length() == 0 && cursorY > 0)
     {
-        auto iterator = lines.begin() + cursor.y;
+        auto iterator = lines.begin() + cursorY;
         lines.erase(iterator);
-        cursor.y -= 1;
-        cursor.x = lines[cursor.y].length();
+        cursorY -= 1;
+        cursorX = lines[cursorY].length();
     }
-    else if (cursor.x <= line.length())
+    else if (cursorX <= line.length())
     {
-        if (cursor.x == 0 && cursor.y > 0)
+        if (cursorX == 0 && cursorY > 0)
         {
-            auto iterator = lines.begin() + cursor.y;
+            auto iterator = lines.begin() + cursorY;
             lines.erase(iterator);
-            cursor.x = lines[cursor.y - 1].length();
-            lines[cursor.y - 1] += line;
-            cursor.y -= 1;
+            cursorX = lines[cursorY - 1].length();
+            lines[cursorY - 1] += line;
+            cursorY -= 1;
         }
-        else if (cursor.x > 0)
+        else if (cursorX > 0)
         {
-            auto iterator = line.begin() + cursor.x - 1;
+            auto iterator = line.begin() + cursorX - 1;
             line.erase(iterator);
-            lines[cursor.y] = line;
-            cursor.x -= 1;
+            lines[cursorY] = line;
+            cursorX -= 1;
         }
     }
 
-    memory = cursor.x;
+    memory = cursorX;
 }
 
 void Document::moveCursorUp()
 {
-    if (cursor.y > 0)
+    if (cursorY > 0)
     {
-        cursor.y -= 1;
-        cursor.x = std::min(memory, (int) lines[cursor.y].length());
+        cursorY -= 1;
+        cursorX = std::min(memory, lines[cursorY].length());
     }
 }
 
 void Document::moveCursorDown()
 {
-    if (cursor.y < lines.size() - 1)
+    if (cursorY < lines.size() - 1)
     {
-        cursor.y += 1;
-        cursor.x = std::min(memory, (int) lines[cursor.y].length());
+        cursorY += 1;
+        cursorX = std::min(memory, lines[cursorY].length());
     }
 }
 
 void Document::moveCursorLeft()
 {
-    if (cursor.x > 0)
+    if (cursorX > 0)
     {
-        cursor.x -= 1;
+        cursorX -= 1;
     }
-    else if (cursor.y > 0)
+    else if (cursorY > 0)
     {
-        cursor.y -= 1;
-        cursor.x = lines[cursor.y].length();
+        cursorY -= 1;
+        cursorX = lines[cursorY].length();
     }
 
-    memory = cursor.x;
+    memory = cursorX;
 }
 
 void Document::moveCursorRight()
 {
-    if (cursor.x < lines[cursor.y].length())
+    if (cursorX < lines[cursorY].length())
     {
-        cursor.x += 1;
+        cursorX += 1;
     }
-    else if (cursor.y < lines.size() - 1)
+    else if (cursorY < lines.size() - 1)
     {
-        cursor.x = 0;
-        cursor.y += 1;
+        cursorX = 0;
+        cursorY += 1;
     }
 
-    memory = cursor.x;
+    memory = cursorX;
 }
 
 void Document::movePageUp(SDL_Point bounds)
 {
-    cursor.y -= bounds.y;
+    cursorY -= bounds.y;
 
-    if (cursor.y < 0)
+    if (cursorY < 0)
     {
-        cursor.y = 0;
+        cursorY = 0;
     }
 
-    cursor.x = std::min(memory, (int) lines[cursor.y].length());
+    cursorX = std::min(memory, lines[cursorY].length());
 }
 
 void Document::movePageDown(SDL_Point bounds)
 {
-    cursor.y += bounds.y;
+    cursorY += bounds.y;
 
-    if (cursor.y >= lines.size())
+    if (cursorY >= lines.size())
     {
-        cursor.y = lines.size() - 1;
+        cursorY = lines.size() - 1;
     }
 
-    cursor.x = std::min(memory, (int) lines[cursor.y].length());
+    cursorX = std::min(memory, lines[cursorY].length());
 }
 
 std::string Document::copyToString()
@@ -244,151 +250,4 @@ std::string Document::copyToString()
     }
 
     return text;
-}
-
-void Document::draw(SDL_Point to, SDL_Point bounds, color_theme_t *theme, FontSheet *font, SDL_Renderer *renderer)
-{
-    SDL_Point position = {0, 0};
-    SDL_Point min = {(cursor.x / bounds.x) * bounds.x, (cursor.y / bounds.y) * bounds.y};
-    SDL_Point max = {min.x + bounds.x, min.y + bounds.y};
-    auto escaping = false;
-    enum stream_state_t {
-        NOTHING_STREAM_STATE,
-        COMMENT_STREAM_STATE,
-        NUMBER_STREAM_STATE,
-        STRING_STREAM_STATE
-    };
-    auto state = NOTHING_STREAM_STATE;
-
-    for (auto line : lines)
-    {
-        for (auto symbol : line)
-        {
-            if (escaping)
-            {
-                escaping = false;
-            }
-            else
-            {
-                switch (symbol)
-                {
-                    case SYMBOL_ESCAPE:
-                        escaping = true;
-                        break;
-                    case SYMBOL_COMMENT:
-                        if (state == NOTHING_STREAM_STATE)
-                        {
-                            state = COMMENT_STREAM_STATE;
-                        }
-                        else if (state == COMMENT_STREAM_STATE)
-                        {
-                            state = NOTHING_STREAM_STATE;
-                        }
-
-                        break;
-                    case SYMBOL_NUMBER:
-                        if (state == NOTHING_STREAM_STATE)
-                        {
-                            state = NUMBER_STREAM_STATE;
-                        }
-                        else if (state == NUMBER_STREAM_STATE)
-                        {
-                            state = NOTHING_STREAM_STATE;
-                        }
-
-                        break;
-                    case SYMBOL_STRING:
-                        if (state == NOTHING_STREAM_STATE)
-                        {
-                            state = STRING_STREAM_STATE;
-                        }
-                        else if (state == STRING_STREAM_STATE)
-                        {
-                            state = NOTHING_STREAM_STATE;
-                        }
-
-                        break;
-                }
-
-                switch (symbol)
-                {
-                    case SYMBOL_ESCAPE:
-                        break;
-                    case SYMBOL_COMMENT:
-                        if (state == COMMENT_STREAM_STATE)
-                        {
-                            font->setColor(&theme->comments);
-                        }
-
-                        break;
-                    case SYMBOL_NUMBER:
-                        if (state == NUMBER_STREAM_STATE)
-                        {
-                            font->setColor(&theme->numbers);
-                        }
-
-                        break;
-                    case SYMBOL_STRING:
-                        if (state == STRING_STREAM_STATE)
-                        {
-                            font->setColor(&theme->strings);
-                        }
-
-                        break;
-                    case SYMBOL_LIST_START:
-                    case SYMBOL_LIST_END:
-                        if (state == NOTHING_STREAM_STATE)
-                        {
-                            font->setColor(&theme->lists);
-                        }
-
-                        break;
-                    case SYMBOL_MAP_START:
-                    case SYMBOL_MAP_END:
-                        if (state == NOTHING_STREAM_STATE)
-                        {
-                            font->setColor(&theme->maps);
-                        }
-
-                        break;
-                    case SYMBOL_CALL_START:
-                    case SYMBOL_CALL_END:
-                        if (state == NOTHING_STREAM_STATE)
-                        {
-                            font->setColor(&theme->calls);
-                        }
-
-                        break;
-                    case SYMBOL_NULL:
-                        if (state == NOTHING_STREAM_STATE)
-                        {
-                            font->setColor(&theme->nulls);
-                        }
-
-                        break;
-                    default:
-                        if (state == NOTHING_STREAM_STATE)
-                        {
-                            font->setColor(&theme->undefined);
-                        }
-
-                        break;
-                }
-            }
-
-            if (position.x >= min.x && position.x < max.x && position.y >= min.y && position.y < max.y)
-            {
-                auto text = std::string(1, symbol);
-                font->draw({to.x + ((position.x - min.x) * font->getFrameWidth()), to.y + ((position.y - min.y) * font->getFrameHeight())}, text, renderer);
-            }
-
-            position.x += 1;
-        }
-
-        position.x = 0;
-        position.y += 1;
-    }
-
-    font->setColor(&theme->cursor);
-    font->draw({to.x + ((cursor.x - min.x) * font->getFrameWidth()), to.y + ((cursor.y - min.y) * font->getFrameHeight())}, "_", renderer);
 }
