@@ -54,8 +54,8 @@ class Document
         void moveCursorRight();
         void movePageUp(SDL_Point bounds);
         void movePageDown(SDL_Point bounds);
+        std::string copyToString();
         void draw(SDL_Point to, SDL_Point bounds, color_theme_t *theme, FontSheet *font, SDL_Renderer *renderer);
-        bool save(std::string filePath);
 };
 
 #endif
