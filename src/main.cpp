@@ -284,6 +284,7 @@ int main(int argc, char **argv)
     highlightedTheme.cursor = {255, 255, 255};
     highlightedTheme.undefined = {0, 255, 20};
     auto theme = highlightedTheme;
+    size_t indentWidth = 2;
     auto toolbar = loadBmpTexture(res / "toolbar.bmp", renderer);
     auto statusbar = loadBmpTexture(res / "statusbar.bmp", renderer);
     auto check = loadBmpTexture(res / "check.bmp", renderer);
@@ -397,7 +398,7 @@ int main(int argc, char **argv)
                             redraw = true;
                             break;
                         case SDLK_TAB:
-                            document.addTab();
+                            document.addIndent(indentWidth);
                             redraw = true;
                             break;
                         case SDLK_DELETE:

@@ -75,9 +75,8 @@ void Document::addNewline()
     memory = cursorX;
 }
 
-void Document::addTab()
+void Document::addIndent(size_t width)
 {
-    auto width = 2;
     auto fill = width - (cursorX % width);
     std::string space = "";
 
