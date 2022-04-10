@@ -2,56 +2,32 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <exception>
 #include <algorithm>
 
-Document::Document()
+Document::Document(std::string text)
 {
     lines = std::vector<std::string>();
-    lines.push_back("");
     cursor = {0, 0};
     memory = 0;
-}
 
-Document::Document(std::string filePath)
-{
-    lines = std::vector<std::string>();
-    cursor = {0, 0};
+    std::string buffer = "";
 
-    std::ifstream fileStream(filePath);
-
-    if (fileStream.is_open())
+    for (auto iterator = text.begin(); iterator != text.end(); iterator++)
     {
-        std::string line;
+        auto symbol = *iterator;
 
-        while (getline(fileStream, line))
+        if (symbol == '\n')
         {
-            lines.push_back(line);
+            lines.push_back(buffer);
+            buffer = "";
         }
-
-        if (line.empty())
+        else
         {
-            lines.push_back(line);
+            buffer.push_back(symbol);
         }
     }
-    else
-    {
-        lines.push_back("`Unable to load file.`");
-    }
 
-    fileStream.close();
-
-    if (lines.size() == 0)
-    {
-        lines.push_back("");
-    }
-    else
-    {
-        cursor.x = lines[lines.size() - 1].length();
-        cursor.y = lines.size() - 1;
-    }
-
-    memory = cursor.x;
+    lines.push_back(buffer);
 }
 
 int Document::getColumnCount()

@@ -38,8 +38,7 @@ class Document
     int memory;
 
     public:
-        Document();
-        Document(std::string filePath);
+        Document(std::string text);
         int getColumnCount();
         int getCursorColumnIndex();
         int getLineCount();
