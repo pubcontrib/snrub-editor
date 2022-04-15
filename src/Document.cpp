@@ -206,11 +206,13 @@ void Document::moveCursorRight()
 
 void Document::movePageUp(SDL_Point bounds)
 {
-    cursorY -= bounds.y;
-
-    if (cursorY < 0)
+    if (cursorY < (size_t) bounds.y)
     {
         cursorY = 0;
+    }
+    else
+    {
+        cursorY -= bounds.y;
     }
 
     cursorX = std::min(memory, lines[cursorY].length());
