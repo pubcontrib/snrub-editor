@@ -1,6 +1,7 @@
 #include "Document.hpp"
 #include "FontSheet.hpp"
 #include "SpriteSheet.hpp"
+#include "Texture.hpp"
 #include "Common.hpp"
 #include <SDL2/SDL.h>
 #include <filesystem>
@@ -8,6 +9,12 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <memory>
+
+const int WINDOW_WIDTH = 640;
+const int WINDOW_HEIGHT = 328;
+
+void applicationLoop(SDL_Window *window, SDL_Renderer *renderer, int argc, char **argv);
 
 std::string readFile(std::string path)
 {
@@ -210,13 +217,6 @@ void draw(std::vector<std::string> lines, SDL_Point to, SDL_Point cursor, SDL_Po
     font->draw({to.x + ((cursor.x - min.x) * font->getFrameWidth()), to.y + ((cursor.y - min.y) * font->getFrameHeight())}, "_", renderer);
 }
 
-void drawTexture(SDL_Texture *texture, int x, int y, int width, int height, SDL_Renderer *renderer)
-{
-    SDL_Rect source = {0, 0, width, height};
-    SDL_Rect destination = {x, y, width, height};
-    SDL_RenderCopy(renderer, texture, &source, &destination);
-}
-
 int main(int argc, char **argv)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -226,10 +226,7 @@ int main(int argc, char **argv)
 
     atexit(SDL_Quit);
 
-    auto width = 640;
-    auto height = 328;
-    auto scale = 1;
-    auto window = SDL_CreateWindow("snrub-editor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+    auto window = SDL_CreateWindow("snrub-editor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
 
     if (!window)
     {
@@ -248,6 +245,18 @@ int main(int argc, char **argv)
     SDL_SetRenderDrawColor(renderer, 8, 8, 8, 255);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 
+    applicationLoop(window, renderer, argc, argv);
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    std::cerr << "Resources freed." << std::endl;
+    SDL_Quit();
+
+    return 0;
+}
+
+void applicationLoop(SDL_Window *window, SDL_Renderer *renderer, int argc, char **argv)
+{
     std::filesystem::path res("res");
 
     if (!std::filesystem::is_directory(res))
@@ -260,8 +269,8 @@ int main(int argc, char **argv)
         crash("Failed to locate resources directory.");
     }
 
-    auto texture = loadBmpTexture(res / "font.bmp", renderer);
-    SpriteSheet sheet(texture, 8, 12);
+    auto texture = std::make_unique<Texture>(loadBmpTexture(res / "font.bmp", renderer));
+    SpriteSheet sheet(texture.get(), 8, 12);
     FontSheet font(&sheet);
     color_theme_t plainTheme;
     plainTheme.comments = {255, 255, 255};
@@ -285,13 +294,13 @@ int main(int argc, char **argv)
     highlightedTheme.undefined = {0, 255, 20};
     auto theme = highlightedTheme;
     size_t indentWidth = 2;
-    auto toolbar = loadBmpTexture(res / "toolbar.bmp", renderer);
-    auto statusbar = loadBmpTexture(res / "statusbar.bmp", renderer);
-    auto check = loadBmpTexture(res / "check.bmp", renderer);
-    auto oneX = loadBmpTexture(res / "1x.bmp", renderer);
-    auto twoX = loadBmpTexture(res / "2x.bmp", renderer);
-    auto toggle = loadBmpTexture(res / "toggle.bmp", renderer);
-    SpriteSheet toggleSheet(toggle, 24, 24);
+    auto toolbar = std::make_unique<Texture>(loadBmpTexture(res / "toolbar.bmp", renderer));
+    auto statusbar = std::make_unique<Texture>(loadBmpTexture(res / "statusbar.bmp", renderer));
+    auto check = std::make_unique<Texture>(loadBmpTexture(res / "check.bmp", renderer));
+    auto oneX = std::make_unique<Texture>(loadBmpTexture(res / "1x.bmp", renderer));
+    auto twoX = std::make_unique<Texture>(loadBmpTexture(res / "2x.bmp", renderer));
+    auto toggle = std::make_unique<Texture>(loadBmpTexture(res / "toggle.bmp", renderer));
+    SpriteSheet toggleSheet(toggle.get(), 24, 24);
     auto document = argc > 1 ? Document(readFile(argv[1])) : Document("");
     auto quit = false;
     auto redraw = true;
@@ -302,6 +311,7 @@ int main(int argc, char **argv)
     auto currentFps = 0;
     auto targetFps = 60;
     SDL_Point bounds = {80, 24};
+    auto scale = 1;
 
     while (!quit)
     {
@@ -314,18 +324,18 @@ int main(int argc, char **argv)
             // Draw tool bar
             for (auto width = 0; width < 640; width += 24)
             {
-                drawTexture(toolbar, width, 0, 24, 24, renderer);
+                toolbar->draw(width, 0, 24, 24, renderer);
             }
 
-            drawTexture(check, 0, 0, 24, 24, renderer);
+            check->draw(0, 0, 24, 24, renderer);
 
             if (scale == 1)
             {
-                drawTexture(twoX, 24, 0, 24, 24, renderer);
+                twoX->draw(24, 0, 24, 24, renderer);
             }
             else if (scale == 2)
             {
-                drawTexture(oneX, 24, 0, 24, 24, renderer);
+                oneX->draw(24, 0, 24, 24, renderer);
             }
 
             SDL_Point to = {48, 0};
@@ -340,7 +350,7 @@ int main(int argc, char **argv)
             // Draw status bar
             for (auto width = 0; width < 640; width += 16)
             {
-                drawTexture(statusbar, width, 312, 16, 16, renderer);
+                statusbar->draw(width, 312, 16, 16, renderer);
             }
 
             to = {0, 316};
@@ -493,7 +503,7 @@ int main(int argc, char **argv)
                         {
                             scale = scale == 1 ? 2 : 1;
                             SDL_RenderSetScale(renderer, scale, scale);
-                            SDL_SetWindowSize(window, width * scale, height * scale);
+                            SDL_SetWindowSize(window, WINDOW_WIDTH * scale, WINDOW_HEIGHT * scale);
                             break;
                         }
 
@@ -534,11 +544,4 @@ int main(int argc, char **argv)
 
         lastUpdate = SDL_GetTicks();
     }
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    std::cerr << "Resources freed." << std::endl;
-    SDL_Quit();
-
-    return 0;
 }

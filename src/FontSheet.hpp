@@ -2,6 +2,7 @@
 #define FONTSHEET_H
 
 #include "SpriteSheet.hpp"
+#include "Texture.hpp"
 #include <SDL2/SDL.h>
 #include <string>
 
