@@ -27,7 +27,7 @@ void FontSheet::draw(SDL_Point to, std::string text, SDL_Renderer *renderer)
 {
     auto length = text.length();
 
-    for (auto index = 0; index < length; index++)
+    for (size_t index = 0; index < length; index++)
     {
         auto symbol = text[index];
 
