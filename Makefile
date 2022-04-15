@@ -16,6 +16,7 @@ OBJS = $(OBJ)/main.o \
 	$(OBJ)/Document.o \
 	$(OBJ)/FontSheet.o \
 	$(OBJ)/SpriteSheet.o \
+	$(OBJ)/Texture.o \
 	$(OBJ)/Common.o
 
 .PHONY: all clean install uninstall
