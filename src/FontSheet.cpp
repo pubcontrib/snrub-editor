@@ -30,19 +30,19 @@ void FontSheet::draw(SDL_Point to, std::string text, SDL_Renderer *renderer)
     for (size_t index = 0; index < length; index++)
     {
         auto symbol = text[index];
+        SDL_Point from;
 
         if (symbol >= 32 && symbol <= 126)
         {
             // Use the ASCII code as the position in the sprite sheet
-            symbol -= 31;
+            from = {symbol - 32, 0};
         }
         else
         {
             // Otherwise use the 0th index which is reserved for undefined
-            symbol = 0;
+            from = {127 - 32, 0};
         }
 
-        SDL_Point from = {symbol, 0};
         sheet->draw(&to, &from, renderer);
 
         to.x += this->sheet->getFrameWidth();
