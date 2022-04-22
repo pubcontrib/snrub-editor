@@ -45,7 +45,7 @@ void FontSheet::draw(SDL_Point to, std::string text, SDL_Renderer *renderer)
         }
         else
         {
-            // Otherwise use the 0th index which is reserved for undefined
+            // Use an undefined symbol found after the ASCII symbols
             from.x = 127 - 32;
         }
 
