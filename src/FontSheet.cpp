@@ -6,6 +6,7 @@
 FontSheet::FontSheet(SpriteSheet *sheet)
 {
     this->sheet = sheet;
+    this->style = FontStyle::BASIC;
 }
 
 int FontSheet::getFrameWidth()
@@ -23,24 +24,29 @@ void FontSheet::setColor(SDL_Color *color)
     this->sheet->setColor(color);
 }
 
+void FontSheet::setStyle(FontStyle style)
+{
+    this->style = style;
+}
+
 void FontSheet::draw(SDL_Point to, std::string text, SDL_Renderer *renderer)
 {
+    SDL_Point from = {0, static_cast<int>(style)};
     auto length = text.length();
 
     for (size_t index = 0; index < length; index++)
     {
         auto symbol = text[index];
-        SDL_Point from;
 
         if (symbol >= 32 && symbol <= 126)
         {
             // Use the ASCII code as the position in the sprite sheet
-            from = {symbol - 32, 0};
+            from.x = symbol - 32;
         }
         else
         {
             // Otherwise use the 0th index which is reserved for undefined
-            from = {127 - 32, 0};
+            from.x = 127 - 32;
         }
 
         sheet->draw(&to, &from, renderer);
