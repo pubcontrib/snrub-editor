@@ -12,7 +12,7 @@
 #include <memory>
 
 const int WINDOW_WIDTH = 640;
-const int WINDOW_HEIGHT = 328;
+const int WINDOW_HEIGHT = 326;
 const char SYMBOL_ESCAPE = '\\';
 const char SYMBOL_COMMENT = '`';
 const char SYMBOL_NUMBER = '#';
@@ -178,26 +178,36 @@ void applicationLoop(SDL_Window *window, SDL_Renderer *renderer, int argc, char 
                 statusbar->draw(width, 312, 16, 16, renderer);
             }
 
-            to = {0, 316};
-            auto line = " L "
+            to = {0, 314};
+            auto line = "  L "
                 + std::to_string(document.getCursorY() + 1)
                 + "/"
                 + std::to_string(document.getLinesCapacity())
-                + " | "
+                + "  |  "
                 + "C "
                 + std::to_string(document.getCursorX() + 1)
                 + "/"
                 + std::to_string(document.getColumnsCapacity())
-                + " |";
-            SDL_Color color = {125, 125, 125, 255};
-            font.setColor(&color);
-            font.draw(to, line, renderer);
+                + "  |";
+            auto capacity = WINDOW_WIDTH / font.getFrameWidth();
 
-            to = {568, 316};
-            line = "| "
+            for (auto index = line.length(); index < capacity - 11; index++)
+            {
+                line += " ";
+            }
+
+            line += "|  "
                 + std::to_string(lastFps)
                 + " FPS";
+
+            for (auto index = line.length(); index < capacity; index++)
+            {
+                line += " ";
+            }
+
+            SDL_Color color = {142, 173, 149, 255};
             font.setColor(&color);
+            font.setStyle(FontStyle::INVERTED);
             font.draw(to, line, renderer);
 
             // Swap render buffer
@@ -386,6 +396,8 @@ void drawDocument(Document document, SDL_Point to, SDL_Point bounds, color_theme
         STRING_STREAM_STATE
     };
     auto state = NOTHING_STREAM_STATE;
+
+    font->setStyle(FontStyle::BASIC);
 
     for (auto line : lines)
     {
