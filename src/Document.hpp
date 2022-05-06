@@ -1,7 +1,7 @@
 #ifndef DOCUMENT_H
 #define DOCUMENT_H
 
-#include "FontSheet.hpp"
+#include <SDL2/SDL.h>
 #include <vector>
 #include <string>
 

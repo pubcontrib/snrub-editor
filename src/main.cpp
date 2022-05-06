@@ -1,7 +1,7 @@
-#include "Document.hpp"
 #include "FontSheet.hpp"
 #include "SpriteSheet.hpp"
 #include "Texture.hpp"
+#include "Document.hpp"
 #include "Common.hpp"
 #include <SDL2/SDL.h>
 #include <filesystem>
