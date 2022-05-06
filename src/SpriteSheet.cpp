@@ -1,5 +1,4 @@
 #include "SpriteSheet.hpp"
-#include "Common.hpp"
 #include <SDL2/SDL.h>
 
 SpriteSheet::SpriteSheet(Texture *texture, int frameWidth, int frameHeight)
