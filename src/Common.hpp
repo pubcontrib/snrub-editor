@@ -1,5 +1,5 @@
-#ifndef UTILITY_H
-#define UTILITY_H
+#ifndef COMMON_H
+#define COMMON_H
 
 #include <string>
 
