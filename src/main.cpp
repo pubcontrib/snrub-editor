@@ -135,7 +135,7 @@ void applicationLoop(SDL_Window *window, SDL_Renderer *renderer, int argc, char 
     auto lastMeasure = SDL_GetTicks();
     auto lastFps = 0;
     auto currentFps = 0;
-    auto targetFps = 60;
+    auto targetFps = 60u;
     SDL_Point bounds = {80, 24};
     auto scale = 1;
 
@@ -189,7 +189,7 @@ void applicationLoop(SDL_Window *window, SDL_Renderer *renderer, int argc, char 
                 + "/"
                 + std::to_string(document.getColumnsCapacity())
                 + "  |";
-            auto capacity = WINDOW_WIDTH / font.getFrameWidth();
+            auto capacity = size_t(WINDOW_WIDTH) / size_t(font.getFrameWidth());
 
             for (auto index = line.length(); index < capacity - 11; index++)
             {
@@ -364,10 +364,14 @@ void applicationLoop(SDL_Window *window, SDL_Renderer *renderer, int argc, char 
 void drawDocument(Document document, SDL_Point to, SDL_Point bounds, color_theme_t *theme, FontSheet *font, SDL_Renderer *renderer)
 {
     std::vector<std::string> lines = document.getLines();
-    SDL_Point cursor = {document.getCursorX(), document.getCursorY()};
-    SDL_Point position = {0, 0};
-    SDL_Point min = {(cursor.x / bounds.x) * bounds.x, (cursor.y / bounds.y) * bounds.y};
-    SDL_Point max = {min.x + bounds.x, min.y + bounds.y};
+    size_t cursorX = document.getCursorX();
+    size_t cursorY = document.getCursorY();
+    size_t positionX = 0;
+    size_t positionY = 0;
+    size_t minX = (cursorX / size_t(bounds.x)) * size_t(bounds.x);
+    size_t minY = (cursorY / size_t(bounds.y)) * size_t(bounds.y);
+    size_t maxX = minX + size_t(bounds.x);
+    size_t maxY = minY + size_t(bounds.y);
     auto escaping = false;
     enum stream_state_t {
         NOTHING_STREAM_STATE,
@@ -495,21 +499,25 @@ void drawDocument(Document document, SDL_Point to, SDL_Point bounds, color_theme
                 }
             }
 
-            if (position.x >= min.x && position.x < max.x && position.y >= min.y && position.y < max.y)
+            if (positionX >= minX && positionX < maxX && positionY >= minY && positionY < maxY)
             {
+                auto relativeSymbolX = static_cast<int>(positionX - minX);
+                auto relativeSymbolY = static_cast<int>(positionY - minY);
                 auto text = std::string(1, symbol);
-                font->draw({to.x + ((position.x - min.x) * font->getFrameWidth()), to.y + ((position.y - min.y) * font->getFrameHeight())}, text, renderer);
+                font->draw({to.x + (relativeSymbolX * font->getFrameWidth()), to.y + (relativeSymbolY * font->getFrameHeight())}, text, renderer);
             }
 
-            position.x += 1;
+            positionX += 1;
         }
 
-        position.x = 0;
-        position.y += 1;
+        positionX = 0;
+        positionY += 1;
     }
 
+    auto relativeCursorX = static_cast<int>(cursorX - minX);
+    auto relativeCursorY = static_cast<int>(cursorY - minY);
     font->setColor(&theme->cursor);
-    font->draw({to.x + ((cursor.x - min.x) * font->getFrameWidth()), to.y + ((cursor.y - min.y) * font->getFrameHeight())}, "_", renderer);
+    font->draw({to.x + (relativeCursorX * font->getFrameWidth()), to.y + (relativeCursorY * font->getFrameHeight())}, "_", renderer);
 }
 
 std::string readFile(std::string path)
