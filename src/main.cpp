@@ -336,7 +336,11 @@ void applicationLoop(SDL_Window *window, SDL_Renderer *renderer, int argc, char 
         // Measure frame rate
         if (SDL_GetTicks() - lastMeasure >= 1000)
         {
-            redraw = lastFps != currentFps;
+            if (lastFps != currentFps)
+            {
+                redraw = true;
+            }
+
             lastMeasure = SDL_GetTicks();
             lastFps = currentFps;
             currentFps = 0;
