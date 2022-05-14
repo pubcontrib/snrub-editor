@@ -240,64 +240,40 @@ void applicationLoop(SDL_Window *window, SDL_Renderer *renderer, int argc, char 
                             break;
                         case SDLK_RETURN:
                             document.addNewline();
-                            redraw = true;
                             break;
                         case SDLK_TAB:
                             document.addIndent(indentWidth);
-                            redraw = true;
                             break;
                         case SDLK_DELETE:
                             document.removeForward();
-                            redraw = true;
                             break;
                         case SDLK_BACKSPACE:
                             document.removeBackward();
-                            redraw = true;
                             break;
                         case SDLK_UP:
                             document.moveCursorUp();
-                            redraw = true;
                             break;
                         case SDLK_DOWN:
                             document.moveCursorDown();
-                            redraw = true;
                             break;
                         case SDLK_LEFT:
                             document.moveCursorLeft();
-                            redraw = true;
                             break;
                         case SDLK_RIGHT:
                             document.moveCursorRight();
-                            redraw = true;
                             break;
                         case SDLK_PAGEUP:
                             document.movePageUp(bounds);
-                            redraw = true;
                             break;
                         case SDLK_PAGEDOWN:
                             document.movePageDown(bounds);
-                            redraw = true;
                             break;
                     }
 
+                    redraw = true;
                     break;
                 case SDL_KEYUP:
-                    switch (event.key.keysym.sym)
-                    {
-                        case SDLK_RETURN:
-                        case SDLK_TAB:
-                        case SDLK_DELETE:
-                        case SDLK_BACKSPACE:
-                        case SDLK_UP:
-                        case SDLK_DOWN:
-                        case SDLK_LEFT:
-                        case SDLK_RIGHT:
-                        case SDLK_PAGEUP:
-                        case SDLK_PAGEDOWN:
-                            redraw = true;
-                            break;
-                    }
-
+                    redraw = true;
                     break;
                 case SDL_TEXTINPUT:
                     document.addText(event.text.text);
