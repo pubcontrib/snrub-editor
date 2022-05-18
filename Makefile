@@ -18,7 +18,7 @@ clean:
 install: bin/snrub-editor
 	$(CP) bin/snrub-editor $(DESTDIR)$(PREFIX)/bin/snrub-editor
 	$(MKDIR) -p $(DESTDIR)$(PREFIX)/share/snrub-editor
-	$(CP) -r res $(DESTDIR)$(PREFIX)/share/snrub-editor/res
+	$(CP) -r res $(DESTDIR)$(PREFIX)/share/snrub-editor
 
 uninstall:
 	$(RM) -f $(DESTDIR)$(PREFIX)/bin/snrub-editor
